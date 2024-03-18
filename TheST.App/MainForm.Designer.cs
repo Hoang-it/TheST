@@ -38,31 +38,34 @@ namespace TheST.App
             // 
             // _deviceConfiguration
             // 
-            _deviceConfiguration.Location = new Point(12, 12);
-            _deviceConfiguration.MaximumSize = new Size(320, 120);
-            _deviceConfiguration.MinimumSize = new Size(320, 120);
+            _deviceConfiguration.Location = new Point(14, 16);
+            _deviceConfiguration.Margin = new Padding(3, 5, 3, 5);
+            _deviceConfiguration.MaximumSize = new Size(366, 160);
+            _deviceConfiguration.MinimumSize = new Size(366, 160);
             _deviceConfiguration.Name = "_deviceConfiguration";
-            _deviceConfiguration.Size = new Size(320, 120);
+            _deviceConfiguration.Size = new Size(366, 160);
             _deviceConfiguration.TabIndex = 0;
             _deviceConfiguration.CaptureDeviceChanged += CaptureDeviceChanged;
             _deviceConfiguration.PlaybackDeviceChanged += PlaybackDeviceChanged;
             // 
             // _waveFormatInfo
             // 
-            _waveFormatInfo.Location = new Point(652, 12);
-            _waveFormatInfo.MaximumSize = new Size(230, 120);
-            _waveFormatInfo.MinimumSize = new Size(230, 120);
+            _waveFormatInfo.Location = new Point(745, 16);
+            _waveFormatInfo.Margin = new Padding(3, 5, 3, 5);
+            _waveFormatInfo.MaximumSize = new Size(263, 160);
+            _waveFormatInfo.MinimumSize = new Size(263, 160);
             _waveFormatInfo.Name = "_waveFormatInfo";
-            _waveFormatInfo.Size = new Size(230, 120);
+            _waveFormatInfo.Size = new Size(263, 160);
             _waveFormatInfo.TabIndex = 1;
             _waveFormatInfo.Title = "Wave format";
             _waveFormatInfo.WaveFormat = null;
             // 
             // _startButton
             // 
-            _startButton.Location = new Point(338, 109);
+            _startButton.Location = new Point(386, 145);
+            _startButton.Margin = new Padding(3, 4, 3, 4);
             _startButton.Name = "_startButton";
-            _startButton.Size = new Size(308, 23);
+            _startButton.Size = new Size(352, 31);
             _startButton.TabIndex = 2;
             _startButton.Text = "Start capture";
             _startButton.UseVisualStyleBackColor = true;
@@ -70,25 +73,28 @@ namespace TheST.App
             // 
             // _waveFormatConfiguration
             // 
-            _waveFormatConfiguration.Location = new Point(338, 12);
-            _waveFormatConfiguration.MaximumSize = new Size(308, 62);
-            _waveFormatConfiguration.MinimumSize = new Size(308, 62);
+            _waveFormatConfiguration.Location = new Point(386, 16);
+            _waveFormatConfiguration.Margin = new Padding(3, 5, 3, 5);
+            _waveFormatConfiguration.MaximumSize = new Size(352, 83);
+            _waveFormatConfiguration.MinimumSize = new Size(352, 83);
             _waveFormatConfiguration.Name = "_waveFormatConfiguration";
-            _waveFormatConfiguration.Size = new Size(308, 62);
+            _waveFormatConfiguration.Size = new Size(352, 83);
             _waveFormatConfiguration.TabIndex = 5;
             _waveFormatConfiguration.Title = "Wave format";
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(889, 382);
+            ClientSize = new Size(1016, 509);
             Controls.Add(_waveFormatConfiguration);
             Controls.Add(_startButton);
             Controls.Add(_waveFormatInfo);
             Controls.Add(_deviceConfiguration);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "MainForm";
             Text = "Form1";
+            FormClosing += MainForm_FormClosing;
             ResumeLayout(false);
         }
 

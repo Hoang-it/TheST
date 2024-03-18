@@ -48,7 +48,7 @@ namespace TheST.App
 
         private void WaveFormatChanged(object? sender, WaveFormat? e)
         {
-            if(e == null)
+            if (e == null)
             {
                 return;
             }
@@ -60,12 +60,12 @@ namespace TheST.App
 
         private void AudioCapture_DataAvailable(object? sender, ReadOnlyMemory<byte> inputSamples)
         {
-            _udpSender.Send(inputSamples, "127.0.0.1", 8888); // TODO: Move to UI configuration
+            _udpSender.Send(inputSamples, "127.0.0.3", 8888); // TODO: Move to UI configuration
         }
 
         private void HandleStartButtonClick(object sender, EventArgs e)
         {
-            if(_startButton.Text == StartLabel)
+            if (_startButton.Text == StartLabel)
             {
                 _audioCapture.StartCapturing();
                 _audioPlayback.Play();
@@ -100,6 +100,11 @@ namespace TheST.App
             {
                 _audioPlayback.UpdatePlaybackDevice(selectedDevice.Id);
             }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
         }
     }
 }
