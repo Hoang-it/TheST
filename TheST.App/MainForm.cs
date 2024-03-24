@@ -17,7 +17,7 @@ namespace TheST.App
         const string StopLabel = "Stop";
         private readonly IAudioCapture _audioCapture;
         private readonly IAudioPlayback _audioPlayback;
-        private WaveFormat _waveFormat = new WaveFormat(8000, 16, 1);
+        private WaveFormat _waveFormat = new WaveFormat(44100, 16, 2);
         private readonly UdpMemorySender _udpSender;
         private UdpCommunicator _udpListener;
         public MainForm()
