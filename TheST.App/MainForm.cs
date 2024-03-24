@@ -60,7 +60,7 @@ namespace TheST.App
 
         private void AudioCapture_DataAvailable(object? sender, ReadOnlyMemory<byte> inputSamples)
         {
-            _udpSender.Send(inputSamples, "127.0.0.3", 8888); // TODO: Move to UI configuration
+            _udpSender.Send(inputSamples, "127.0.0.1", 6666); // TODO: Move to UI configuration
         }
 
         private void HandleStartButtonClick(object sender, EventArgs e)

@@ -12,8 +12,8 @@ from miniaudio import SampleFormat, decode, wav_read_f32
 from scipy.io.wavfile import write
 import sounddevice as sd
 from utilities.WaveUtilities import float_to_byte, byte_to_float
-HOST = "127.0.0.3"  # Standard loopback interface address (localhost)
-PORT = 8888  # Port to listen on (non-privileged ports are > 1023)
+HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
+PORT = 6666  # Port to listen on (non-privileged ports are > 1023)
 package_size = 32768
 
 class TMA_RVC:
@@ -203,6 +203,7 @@ class STSRealtimeAdapter:
         self.channels = 2
         self.model = TMA_RVC(samplerate=self.samplerate,
                              channels=self.channels)
+        self.socket_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         
     def open(self) -> socket:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -221,27 +222,26 @@ class STSRealtimeAdapter:
     def listen(self):
         self.open()
         data_size = 10
-        while True:
-            try:    
-                # receive data
-                data, addr = self.s.recvfrom(package_size)                                
-                # convert data to numpy
-                input_wave = self.decode(data=data)                                    
-                
-                # inference
-                # output_wave = self.model.inference(input_wave)  
-                
-                # convert numpy to bytes
-                res = self.encode(input_wave)
-                print(len(res))
-                                    
-                # send back
-                self.send(res, ('127.0.0.1', 8888))  
-            except KeyboardInterrupt:
-                print('\nRecording finished')
-                break
-            except Exception as e:
-                print(e)            
+        try:    
+            while True:
+                    # receive data
+                    data, addr = self.s.recvfrom(package_size)                                
+                    # convert data to numpy
+                    input_wave = self.decode(data=data)                                    
+                    
+                    # inference
+                    # output_wave = self.model.inference(input_wave)  
+                    
+                    # convert numpy to bytes
+                    res = self.encode(input_wave)
+                    # print(len(res))
+                                        
+                    # send back
+                    self.socket_send.sendto(res, ('127.0.0.1', 8888))  
+        except KeyboardInterrupt:
+            print('\nRecording finished')
+        except Exception as e:
+            print(e)            
             
                          
     def send(self, data, addr):
