@@ -2,6 +2,12 @@
 import wave
 import numpy as np
 
+def printt(strr, *args):
+    if len(args) == 0:
+        print(strr)
+    else:
+        print(strr % args)
+        
 def bytes_to_wav(byte_data, filename):
     result = np.array()
     with wave.open(result, 'wb') as wav_file:

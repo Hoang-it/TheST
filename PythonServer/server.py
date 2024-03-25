@@ -1,5 +1,9 @@
 from adapter.STSRealtimeAdapter import STSRealtimeAdapter
 
 if __name__ == "__main__":
-    adapter = STSRealtimeAdapter()
-    adapter.listen()
+    try:
+        adapter = STSRealtimeAdapter()
+        # adapter.listen()
+        adapter.sounddevice()
+    except Exception as e:
+        print(e)
