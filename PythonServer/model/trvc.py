@@ -10,8 +10,6 @@ from utilities.WaveUtilities import  printt
 import torchaudio.transforms as tat
 from tools.torchgate import TorchGate
 import sys
-import queue
-import threading
         
 class TMA_RVC:
     def __init__(self, 
@@ -20,10 +18,13 @@ class TMA_RVC:
                  block_time,
                  zc,
                  raw_block_frame,
-                 block_frame) -> None:
+                 block_frame,
+                 pth_path,
+                 index_path,
+                 ) -> None:
         self.pitch: int = 0
-        self.pth_path: str = "F:\.Net\TheST\PythonServer\\assets\Indian-1-1000.pth"
-        self.index_path: str = "F:\.Net\TheST\PythonServer\\assets\weights\\added_IVF49_Flat_nprobe_1_Indian-1-1000_v2.index"
+        self.pth_path: str = pth_path
+        self.index_path: str = index_path
         self.index_rate: float = 0.1
         self.n_cpu = min(cpu_count(), 8)
         self.n_cpu: int = min(self.n_cpu, 4)
@@ -137,8 +138,7 @@ class TMA_RVC:
         self.output_buffer: torch.Tensor = self.input_wav.clone()
         self.use_pv: bool = False
         
-    def infer(self, indata: np.ndarray):
-        print(f"================={indata.shape}=======================")
+    def infer(self, indata: np.ndarray) -> np.ndarray:
         start_time = time.perf_counter()
         indata = librosa.to_mono(indata.T)
         if self.threhold > -60:
@@ -156,22 +156,17 @@ class TMA_RVC:
                     indata[i * self.zc : (i + 1) * self.zc] = 0
             indata = indata[self.zc // 2 :]
         
-        print(f"Line 170: indata {indata.shape}, block_frame {self.block_frame}")
-        print(f"input_wav size {self.input_wav.shape}")
         self.input_wav[: -self.block_frame] = self.input_wav[
             self.block_frame :
         ].clone()
-        print(f"Line 175 input_wav: {self.input_wav.shape}")
         
         self.input_wav[-indata.shape[0] :] = torch.from_numpy(indata).to(
             self.device
         )
-        print(f"Line 180 input_wav: {self.input_wav.shape}")
         
         self.input_wav_res[: -self.block_frame_16k] = self.input_wav_res[
             self.block_frame_16k :
         ].clone()
-        print(f"Line 185 input_wav: {self.input_wav.shape}")
         
         # input noise reduction and resampling
         if self.I_noise_reduce:
@@ -200,8 +195,6 @@ class TMA_RVC:
                 ]
             )
         # infer
-        print(f"Line 214 input_wav: {self.input_wav.shape}")
-        
         if self.function == "vc":
             infer_wav = self.rvc.infer(
                 self.input_wav_res,
@@ -210,14 +203,12 @@ class TMA_RVC:
                 self.return_length,
                 self.f0method,
             )
-            print(f"Line 224: {infer_wav.shape}")
             if self.resampler2 is not None:
                 infer_wav = self.resampler2(infer_wav)
         elif self.I_noise_reduce:
             infer_wav = self.input_wav_denoise[self.extra_frame :].clone()
         else:
             infer_wav = self.input_wav[self.extra_frame :].clone()
-        print(f"Line 231: {infer_wav.shape}")
         
         # output noise reduction
         if self.O_noise_reduce and self.function == "vc":
@@ -228,7 +219,6 @@ class TMA_RVC:
             infer_wav = self.tg(
                 infer_wav.unsqueeze(0), self.output_buffer.unsqueeze(0)
             ).squeeze(0)
-        print(f"Line 242: {infer_wav.shape}")
         
         # volume envelop mixing
         if self.rms_mix_rate < 1 and self.function == "vc":
@@ -265,7 +255,6 @@ class TMA_RVC:
                 rms1 / rms2, torch.tensor(1 - self.rms_mix_rate)
             )
         # SOLA algorithm from https://github.com/yxlllc/DDSP-SVC
-        print(f"Line 279: {infer_wav.shape}")
         
         conv_input = infer_wav[
             None, None, : self.sola_buffer_frame + self.sola_search_frame
@@ -286,10 +275,8 @@ class TMA_RVC:
         else:
             sola_offset = torch.argmax(cor_nom[0, 0] / cor_den[0, 0])
         printt("sola_offset = %d", int(sola_offset))
-        print(f"Line 300: {infer_wav.shape}")
         
         infer_wav = infer_wav[sola_offset:]
-        print(f"Line 303: {infer_wav.shape}")
         
         if "privateuseone" in str(self.config.device) or not self.use_pv:
             infer_wav[: self.sola_buffer_frame] *= self.fade_in_window
@@ -303,15 +290,10 @@ class TMA_RVC:
                 self.fade_out_window,
                 self.fade_in_window,
             )
-        print(f"Line 317: {infer_wav.shape}")
         
-        print("Debug")
         self.sola_buffer[:] = infer_wav[
             self.block_frame : self.block_frame + self.sola_buffer_frame
         ]
-        print(f"Line 323: {infer_wav.shape}")
-        
-        print("Debug")
         
         total_time = time.perf_counter() - start_time
         printt("Infer time: %.2f", total_time)

@@ -1,21 +1,34 @@
 
-import wave
 import numpy as np
+import queue
 
+class InputQueue(queue.Queue):
+    '''
+        Queue data and put/pop with blocksize
+    '''
+
+    def __init__(self, maxsize=0, blocksize=0):
+        self.blocksize = blocksize
+        super().__init__(maxsize=maxsize)
+        
+    def _put(self, item):
+        for i in item:
+            self.queue.append(i)
+
+    def _get(self):
+        result = []
+        for i in range(self.blocksize):
+            result.append(self.queue.popleft())
+        return np.array(result)
+    
+    def enough_data(self):
+        return self.qsize() >= self.blocksize
+        
 def printt(strr, *args):
     if len(args) == 0:
         print(strr)
     else:
-        print(strr % args)
-        
-def bytes_to_wav(byte_data, filename):
-    result = np.array()
-    with wave.open(result, 'wb') as wav_file:
-        wav_file.setnchannels(1)
-        wav_file.setsampwidth(2)
-        wav_file.setframerate(8000)
-        wav_file.writeframes(byte_data)      
-
+        print(strr % args)   
 
 def float_to_byte(sig):
     # float32 -> int16(PCM_16) -> byte
