@@ -136,8 +136,6 @@ class TMA_RVC:
         self.O_noise_reduce: bool = False
         self.output_buffer: torch.Tensor = self.input_wav.clone()
         self.use_pv: bool = False
-        self.q = queue.Queue(maxsize=self.block_frame)
-        self.event = threading.Event()
         
     def infer(self, indata: np.ndarray):
         print(f"================={indata.shape}=======================")
