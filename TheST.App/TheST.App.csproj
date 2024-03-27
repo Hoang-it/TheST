@@ -16,8 +16,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Audio.Capture\Audio.Capture.csproj" />
-    <ProjectReference Include="..\Audio.Capturing\Audio.Playback.csproj" />
+    <ProjectReference Include="..\Audio.Playback\Audio.Playback.csproj" />
     <ProjectReference Include="..\Audio.Core\Audio.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="audio-processing.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="audio-processing.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="$(SolutionDir)\TheST.App\RVCService\**" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

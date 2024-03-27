@@ -1,10 +1,11 @@
 ﻿using System.Net.Sockets;
 using System.Net;
 using TheST.Core.Buffers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TheST.Sockets
 {
-    public sealed class UdpCommunicator
+    public sealed class UdpCommunicator : IDisposable
     {
         private readonly UdpClient _udpClient;
         private bool isListening;
@@ -20,10 +21,18 @@ namespace TheST.Sockets
 
         public event EventHandler<ReadOnlyMemory<byte>>? MessageReceived;
         public event EventHandler<string>? OnError;
-        public void Close()
+        public void Dispose()
         {
-            StopListening();
-            _udpClient.Close();
+            try
+            {
+                MessageReceived = null;
+                OnError = null;
+                _udpClient?.Close();
+                _udpClient?.Dispose();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public void SendBytes(ReadOnlySpan<byte> bytes)
@@ -34,15 +43,21 @@ namespace TheST.Sockets
             }
         }
 
-        public void StartListening()
+        public void SendBytes(ReadOnlySpan<byte> bytes, string remoteAddress, int remotePort)
         {
-            receiveTask = Task.Run(() => ListenForMessages());
+            using (var tempBuffer = new RentedMemory<byte>(bytes))
+            {
+                _udpClient.Send(tempBuffer, tempBuffer.Length, new IPEndPoint(IPAddress.Parse(remoteAddress), remotePort));
+            }
         }
 
-        public void StopListening()
+        public void StartListening()
         {
-            isListening = false;
-            receiveTask?.Wait();
+            if (isListening)
+            {
+                return;
+            }
+            receiveTask = Task.Run(ListenForMessages);
         }
 
         private void ListenForMessages()
@@ -61,6 +76,7 @@ namespace TheST.Sockets
                     byte[] data = _udpClient.Receive(ref localEndPoint);
                     MessageReceived?.Invoke(this, data);
                 }
+                catch (SocketException) { }
                 catch (Exception ex)
                 {
                     OnError?.Invoke(this, ex.Message);

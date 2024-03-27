@@ -3,11 +3,11 @@ import numpy as np
 from utilities.WaveUtilities import float_to_byte, byte_to_float, InputQueue
 from model.trvc import TMA_RVC
 
-HOST = "127.0.0.3"  # Standard loopback interface address (localhost)
-HOST_PORT = 8888  # Port to listen on (non-privileged ports are > 1023)
+HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
+HOST_PORT = 6666  # Port to listen on (non-privileged ports are > 1023)
 
 CLIENT = '127.0.0.1'
-CLIENT_PORT = 8888 
+CLIENT_PORT = 7777 
 
 PACKAGE_SIZE = 32768
 SAMPLERATE = 44100

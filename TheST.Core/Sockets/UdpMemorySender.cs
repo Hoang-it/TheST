@@ -30,7 +30,7 @@ namespace TheST.Sockets
             GC.SuppressFinalize(this);
         }
 
-        public void Send(ReadOnlyMemory<byte> data)
+        public void Send(ReadOnlySpan<byte> data)
         {
             if(remoteEndPoint == null)
             {
@@ -39,11 +39,11 @@ namespace TheST.Sockets
             Send(data, remoteEndPoint);
         }
 
-        public void Send(ReadOnlyMemory<byte> data, IPEndPoint to)
+        public void Send(ReadOnlySpan<byte> data, IPEndPoint to)
         {
-            socket.SendTo(data.Span, to);
+            socket.SendTo(data, to);
         }
-        public void Send(ReadOnlyMemory<byte> data, string remoteHost, int remotePort)
+        public void Send(ReadOnlySpan<byte> data, string remoteHost, int remotePort)
         {
             Send(data, new IPEndPoint(IPAddress.Parse(remoteHost), remotePort));
         }
