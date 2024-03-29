@@ -60,7 +60,7 @@ namespace TheST.App.AudioProcessing
                 _udpCommunicator.MessageReceived += HandleMessageReceived;
                 _udpCommunicator.StartListening();
                 _isRunning = true;
-                pythonAudioProcess = ExecuteAIAudioProcess(".\\audio-processing.bat");
+                //pythonAudioProcess = ExecuteAIAudioProcess(".\\audio-processing.bat");
                 //pythonAudioProcess = ExecutePythonScript("./audio-processing.py");
             }
         }
@@ -73,7 +73,7 @@ namespace TheST.App.AudioProcessing
                 {
                     return;
                 }
-                pythonAudioProcess?.Kill();
+                //pythonAudioProcess?.Kill();
                 _udpCommunicator.MessageReceived -= HandleMessageReceived;
                 _isRunning = false;
             }
