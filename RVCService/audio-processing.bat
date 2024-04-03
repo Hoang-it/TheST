@@ -1,3 +1,3 @@
 @echo off
-.\rvc_env\Scripts\activate && python server.py
+python server.py
 pause
